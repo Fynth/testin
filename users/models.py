@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import datetime, timedelta
 from django.db import models
 from django.forms.widgets import DateTimeBaseInput
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
@@ -50,12 +50,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     def get_short_name(self):
         return self.username
     
-    def _generate_jwt_token(self):
-        dt = DateTimeBaseInput.now() + timedelta(days=1)
+    def generate_jwt_token(self):
+        dt = datetime.now() + timedelta(days=1)
 
+        timestamp = int(dt.timestamp())
+        
         token = jwt.encode({
             'id': self.pk,
-            'exp': int(dt.strftime('%s'))
+            'exp': timestamp
         }, settings.SECRET_KEY, algorithm='HS256')
 
         return token.decode('utf-8')
