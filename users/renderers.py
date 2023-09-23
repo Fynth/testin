@@ -3,7 +3,7 @@ from rest_framework.renderers import JSONRenderer
 
 
 class UserJSONRenderer(JSONRenderer):
-    charser = 'utf-8'
+    charset = 'utf-8'
 
     def render(self, data, media_type=None, render_context=None):
 
