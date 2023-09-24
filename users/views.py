@@ -6,7 +6,9 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
-from django.views.decorators.csrf import csrf_exempt
+from rest_framework_jwt.utils import jwt_encode_handler, jwt_payload_handler
+from rest_framework.decorators import authentication_classes, permission_classes
+from rest_framework_jwt.authentication import JSONWebTokenAuthentication
 
 from .serializers import LoginSerializer, RegistrationSerializer
 from .renderers import UserJSONRenderer
@@ -38,15 +40,18 @@ class LoginAPIView(APIView):
         email = user.get('email', '')   
         password = user.get('password', '')
         user = authenticate(request, email=email, password=password)
-        token = Token.objects.get_or_create(user=user)
+        token, created = Token.objects.get_or_create(user=user)
+        payload = jwt_payload_handler(user)
+        jwttoken = jwt_encode_handler(payload)
 
         if user:
-            return Response({'token': token.key}, status=status.HTTP_200_OK)
+            return Response({'jwt-token': jwttoken}, status=status.HTTP_200_OK)
         
 
-
+@authentication_classes([JSONWebTokenAuthentication])
+@permission_classes([IsAuthenticated])
 class UserDetailsView(APIView):
-    permission_classes = [IsAuthenticated]
+    
 
     def get(self, request):
         user = request.user
