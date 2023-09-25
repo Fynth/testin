@@ -1,6 +1,5 @@
 from datetime import datetime, timedelta
 from django.db import models
-from django.forms.widgets import DateTimeBaseInput
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from work import settings
 import jwt

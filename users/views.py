@@ -7,8 +7,9 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.authtoken.models import Token
 from rest_framework_jwt.utils import jwt_encode_handler, jwt_payload_handler
+from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.decorators import authentication_classes, permission_classes
-from rest_framework_jwt.authentication import JSONWebTokenAuthentication
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from .serializers import LoginSerializer, RegistrationSerializer
 from .renderers import UserJSONRenderer
@@ -41,14 +42,14 @@ class LoginAPIView(APIView):
         password = user.get('password', '')
         user = authenticate(request, email=email, password=password)
         token, created = Token.objects.get_or_create(user=user)
-        payload = jwt_payload_handler(user)
-        jwttoken = jwt_encode_handler(payload)
+        refresh = RefreshToken.for_user(user)
+        access_token = str(refresh.access_token)
 
         if user:
-            return Response({'jwt-token': jwttoken}, status=status.HTTP_200_OK)
+            return Response({'jwt-token': access_token}, status=status.HTTP_200_OK)
         
 
-@authentication_classes([JSONWebTokenAuthentication])
+@authentication_classes([JWTAuthentication])
 @permission_classes([IsAuthenticated])
 class UserDetailsView(APIView):
     

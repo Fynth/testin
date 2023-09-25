@@ -1,6 +1,3 @@
-from django.contrib.auth.middleware import get_user
-from django.utils.functional import SimpleLazyObject
-from django.utils.deprecation import MiddlewareMixin
 from rest_framework.authtoken.models import Token
 
 class TokenMiddleware:
